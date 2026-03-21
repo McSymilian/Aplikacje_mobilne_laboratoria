@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.aplikacjatypulista_szczegy.routes.AppDatabase
 import com.example.aplikacjatypulista_szczegy.routes.RouteEntity
 import com.example.aplikacjatypulista_szczegy.routes.RouteRepository
-import com.example.aplikacjatypulista_szczegy.ui.theme.AplikacjaTypuListaszczegółyTheme
+import com.example.aplikacjatypulista_szczegy.ui.theme.AplikacjaTypuListaszczegolyTheme
 
 class RouteDetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +27,7 @@ class RouteDetailsActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            AplikacjaTypuListaszczegółyTheme {
+            AplikacjaTypuListaszczegolyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     RouteDetailsScreen(
                         repository = repository,

@@ -25,7 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.aplikacjatypulista_szczegy.routes.AppDatabase
 import com.example.aplikacjatypulista_szczegy.routes.RouteEntity
 import com.example.aplikacjatypulista_szczegy.routes.RouteRepository
-import com.example.aplikacjatypulista_szczegy.ui.theme.AplikacjaTypuListaszczegółyTheme
+import com.example.aplikacjatypulista_szczegy.ui.theme.AplikacjaTypuListaszczegolyTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            AplikacjaTypuListaszczegółyTheme {
+            AplikacjaTypuListaszczegolyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     RouteListScreen(
                         repository = repository,
