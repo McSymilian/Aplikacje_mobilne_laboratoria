@@ -45,7 +45,7 @@ class RouteDetailsActivity : ComponentActivity() {
 }
 
 @Composable
-private fun RouteDetailsScreen(
+fun RouteDetailsScreen(
     repository: RouteRepository,
     routeId: Long,
     modifier: Modifier = Modifier
