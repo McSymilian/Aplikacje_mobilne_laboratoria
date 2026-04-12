@@ -1,12 +1,30 @@
 package com.example.aplikacjatypulista_szczegy.routes
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class RouteRepository(private val routeDao: RouteDao) {
+class RouteRepository(
+    private val routeDao: RouteDao,
+    private val routeTimerDao: RouteTimerDao
+) {
 
     fun getRoutes(): Flow<List<RouteEntity>> = routeDao.getAll()
 
     fun getRouteById(routeId: Long): Flow<RouteEntity?> = routeDao.getById(routeId)
+
+    fun getSavedElapsedSeconds(routeId: Long, dateIso: String): Flow<Long> {
+        return routeTimerDao.getByRouteAndDate(routeId, dateIso).map { it?.elapsedSeconds ?: 0L }
+    }
+
+    suspend fun saveElapsedSeconds(routeId: Long, dateIso: String, elapsedSeconds: Long) {
+        routeTimerDao.upsert(
+            RouteTimerEntity(
+                routeId = routeId,
+                dateIso = dateIso,
+                elapsedSeconds = elapsedSeconds
+            )
+        )
+    }
 
     suspend fun seedIfEmpty() {
         if (routeDao.count() > 20) return
