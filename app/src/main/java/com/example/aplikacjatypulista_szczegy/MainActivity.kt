@@ -59,8 +59,7 @@ class MainActivity : ComponentActivity() {
                 val windowInfo = LocalWindowInfo.current
                 val density = LocalDensity.current
                 val containerWidthDp = with(density) { windowInfo.containerSize.width.toDp() }
-                val containerHeightDp = with(density) { windowInfo.containerSize.height.toDp() }
-                val isListDetail = containerWidthDp >= containerHeightDp && containerWidthDp >= 600.dp
+                val isListDetail = containerWidthDp >= 600.dp
                 var selectedRouteId by rememberSaveable { mutableStateOf<Long?>(null) }
 
                 Scaffold(
@@ -81,16 +80,9 @@ class MainActivity : ComponentActivity() {
 
                             VerticalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-                            RoutePreviewPane(
+                            RouteDetailsPane(
                                 repository = repository,
                                 routeId = selectedRouteId,
-                                onOpenFullDetails = { routeId ->
-                                    val detailsIntent = Intent(
-                                        this@MainActivity,
-                                        RouteDetailsActivity::class.java
-                                    ).putExtra(RouteDetailsActivity.EXTRA_ROUTE_ID, routeId)
-                                    startActivity(detailsIntent)
-                                },
                                 modifier = Modifier.weight(1f)
                             )
                         }

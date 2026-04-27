@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
+import androidx.compose.ui.platform.LocalContext
 import com.example.aplikacjatypulista_szczegy.routes.AppDatabase
 import com.example.aplikacjatypulista_szczegy.routes.RouteEntity
 import com.example.aplikacjatypulista_szczegy.routes.RouteRepository
@@ -100,6 +102,36 @@ fun RouteDetailsScreen(
         onInterrupt = stopwatchViewModel::onInterrupt,
         modifier = modifier
     )
+}
+
+@Composable
+fun RouteDetailsPane(
+    repository: com.example.aplikacjatypulista_szczegy.routes.RouteRepository,
+    routeId: Long?,
+    modifier: Modifier = Modifier
+) {
+    val id = routeId ?: -1L
+    val context = LocalContext.current
+    val activity = context as? ComponentActivity
+
+    // Create ViewModel using the Activity's ViewModelStoreOwner so we don't depend on
+    // the lifecycle-viewmodel-compose artifact. Keep ViewModel per-activity.
+    val vm = remember(activity, id) {
+        activity?.let {
+            ViewModelProvider(it, RouteDetailsViewModel.Factory(repository, id))[RouteDetailsViewModel::class.java]
+        }
+    } as? RouteDetailsViewModel
+
+    if (vm != null) {
+        RouteDetailsScreen(
+            repository = repository,
+            stopwatchViewModel = vm,
+            routeId = id,
+            modifier = modifier
+        )
+    } else {
+        Text(text = "Brak kontekstu do utworzenia ViewModel")
+    }
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
