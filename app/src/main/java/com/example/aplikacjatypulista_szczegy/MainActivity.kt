@@ -27,6 +27,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -50,6 +51,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.aplikacjatypulista_szczegy.routes.AppDatabase
+import com.example.aplikacjatypulista_szczegy.routes.RouteEntity
 import com.example.aplikacjatypulista_szczegy.routes.RouteRepository
 import com.example.aplikacjatypulista_szczegy.ui.theme.AplikacjaTypuListaszczegolyTheme
 import kotlinx.coroutines.flow.SharingStarted
@@ -175,7 +177,7 @@ private fun MainScreen(
 
 @Composable
 private fun RouteListScreenGrid(
-    routes: List<com.example.aplikacjatypulista_szczegy.routes.RouteEntity>,
+    routes: List<RouteEntity>,
     modifier: Modifier = Modifier,
     onRouteClick: (Long) -> Unit
 ) {
@@ -245,7 +247,7 @@ private fun RouteListScreenGrid(
                                 .fillMaxWidth()
                                 .height(120.dp),
                             contentAlignment = Alignment.Center) {
-                                androidx.compose.material3.Icon(
+                                Icon(
                                     imageVector = Icons.Filled.Share,
                                     contentDescription = "Obrazek trasy",
                                     modifier = Modifier.fillMaxSize(),

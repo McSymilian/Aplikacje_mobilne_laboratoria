@@ -146,7 +146,7 @@ fun RouteDetailsPane(
 
     val vm = remember(activity, id) {
         activity?.let {
-            ViewModelProvider(it, RouteDetailsViewModel.Factory(repository, id)).get(id.toString(), RouteDetailsViewModel::class.java)
+            ViewModelProvider(it, RouteDetailsViewModel.Factory(repository, id))[id.toString(), RouteDetailsViewModel::class.java]
         }
     }
 
@@ -242,7 +242,7 @@ private fun RouteInfoCard(
                     .padding(bottom = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                androidx.compose.material3.Icon(
+                Icon(
                     imageVector = Icons.Filled.Share,
                     contentDescription = "Zdjecie szczegolowe trasy",
                     modifier = Modifier.fillMaxSize(),
