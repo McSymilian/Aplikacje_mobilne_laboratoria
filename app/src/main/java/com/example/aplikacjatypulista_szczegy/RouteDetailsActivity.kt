@@ -25,7 +25,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -58,14 +63,13 @@ class RouteDetailsActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AplikacjaTypuListaszczegolyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    RouteDetailsScreen(
-                        repository = repository,
-                        stopwatchViewModel = stopwatchViewModel,
-                        routeId = routeId,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                RouteDetailsScreen(
+                    repository = repository,
+                    stopwatchViewModel = stopwatchViewModel,
+                    routeId = routeId,
+                    showTopBar = true,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
@@ -76,14 +80,17 @@ class RouteDetailsActivity : ComponentActivity() {
 }
 
 @Composable
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 fun RouteDetailsScreen(
     repository: RouteRepository,
     stopwatchViewModel: RouteDetailsViewModel,
     routeId: Long,
+    showTopBar: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val route by repository.getRouteById(routeId).collectAsState(initial = null)
     val stopwatchState by stopwatchViewModel.stopwatchState.collectAsState()
+    val context = LocalContext.current
 
     if (route == null) {
         Text(
@@ -94,39 +101,61 @@ fun RouteDetailsScreen(
     }
     val currentRoute = route ?: return
 
-    RouteDetailsContent(
-        route = currentRoute,
-        stopwatchState = stopwatchState,
-        onStart = stopwatchViewModel::onStart,
-        onStop = stopwatchViewModel::onStop,
-        onInterrupt = stopwatchViewModel::onInterrupt,
-        modifier = modifier
-    )
+    Scaffold(
+        modifier = modifier,
+        topBar = if (showTopBar) {
+            { TopAppBar(title = { Text(text = currentRoute.name) }) }
+        } else {
+            {}
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                val text = "Trasa: ${currentRoute.name}\nCzas: ${formatElapsedTime(stopwatchState.elapsedSeconds)}"
+                val sendIntent = android.content.Intent().apply {
+                    action = android.content.Intent.ACTION_SEND
+                    putExtra(android.content.Intent.EXTRA_TEXT, text)
+                    type = "text/plain"
+                }
+                val chooser = android.content.Intent.createChooser(sendIntent, "Wyślij czas")
+                context.startActivity(chooser)
+            }) {
+                Icon(imageVector = Icons.Filled.Share, contentDescription = "Wyślij czas")
+            }
+        }
+    ) { innerPadding ->
+        RouteDetailsContent(
+            route = currentRoute,
+            stopwatchState = stopwatchState,
+            onStart = stopwatchViewModel::onStart,
+            onStop = stopwatchViewModel::onStop,
+            onInterrupt = stopwatchViewModel::onInterrupt,
+            modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())
+        )
+    }
 }
 
 @Composable
 fun RouteDetailsPane(
-    repository: com.example.aplikacjatypulista_szczegy.routes.RouteRepository,
-    routeId: Long?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    repository: RouteRepository,
+    routeId: Long?
 ) {
     val id = routeId ?: -1L
     val context = LocalContext.current
     val activity = context as? ComponentActivity
 
-    // Create ViewModel using the Activity's ViewModelStoreOwner so we don't depend on
-    // the lifecycle-viewmodel-compose artifact. Keep ViewModel per-activity.
     val vm = remember(activity, id) {
         activity?.let {
-            ViewModelProvider(it, RouteDetailsViewModel.Factory(repository, id))[RouteDetailsViewModel::class.java]
+            ViewModelProvider(it, RouteDetailsViewModel.Factory(repository, id)).get(id.toString(), RouteDetailsViewModel::class.java)
         }
-    } as? RouteDetailsViewModel
+    }
 
     if (vm != null) {
         RouteDetailsScreen(
             repository = repository,
             stopwatchViewModel = vm,
             routeId = id,
+            showTopBar = false,
             modifier = modifier
         )
     } else {
@@ -206,6 +235,20 @@ private fun RouteInfoCard(
 
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(cardPadding)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(bottom = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Filled.Share,
+                    contentDescription = "Zdjecie szczegolowe trasy",
+                    modifier = Modifier.fillMaxSize(),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
             Text(text = route.name, style = nameStyle)
             Text(text = "Typ: ${route.type}", modifier = Modifier.padding(top = 8.dp))
             Text(text = route.description, modifier = Modifier.padding(top = 12.dp))

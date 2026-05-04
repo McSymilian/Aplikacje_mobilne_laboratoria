@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.aplikacjatypulista_szczegy.routes.RouteRepository
-import java.time.LocalDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,17 +16,15 @@ import kotlinx.coroutines.launch
 
 data class StopwatchUiState(
     val elapsedSeconds: Long = 0L,
-    val isRunning: Boolean = false,
-    val dateIso: String = LocalDate.now().toString()
+    val isRunning: Boolean = false
 )
 
 class RouteDetailsViewModel(
     private val repository: RouteRepository,
-    private val routeId: Long,
-    private val dateIso: String = LocalDate.now().toString()
+    private val routeId: Long
 ) : ViewModel() {
 
-    private val _stopwatchState = MutableStateFlow(StopwatchUiState(dateIso = dateIso))
+    private val _stopwatchState = MutableStateFlow(StopwatchUiState())
     val stopwatchState: StateFlow<StopwatchUiState> = _stopwatchState.asStateFlow()
 
     private var elapsedBeforeStartSeconds = 0L
@@ -36,7 +33,7 @@ class RouteDetailsViewModel(
 
     init {
         viewModelScope.launch {
-            elapsedBeforeStartSeconds = repository.getSavedElapsedSeconds(routeId, dateIso).first()
+            elapsedBeforeStartSeconds = repository.getSavedElapsedSeconds(routeId).first()
             _stopwatchState.update { it.copy(elapsedSeconds = elapsedBeforeStartSeconds) }
         }
     }
@@ -94,7 +91,6 @@ class RouteDetailsViewModel(
         viewModelScope.launch {
             repository.saveElapsedSeconds(
                 routeId = routeId,
-                dateIso = dateIso,
                 elapsedSeconds = _stopwatchState.value.elapsedSeconds
             )
         }
@@ -107,13 +103,12 @@ class RouteDetailsViewModel(
 
     class Factory(
         private val repository: RouteRepository,
-        private val routeId: Long,
-        private val dateIso: String = LocalDate.now().toString()
+        private val routeId: Long
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(RouteDetailsViewModel::class.java)) {
-                return RouteDetailsViewModel(repository, routeId, dateIso) as T
+                return RouteDetailsViewModel(repository, routeId) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

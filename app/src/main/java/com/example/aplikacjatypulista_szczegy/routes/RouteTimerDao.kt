@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RouteTimerDao {
-    @Query("SELECT * FROM route_timers WHERE routeId = :routeId AND dateIso = :dateIso")
-    fun getByRouteAndDate(routeId: Long, dateIso: String): Flow<RouteTimerEntity?>
+    @Query("SELECT * FROM route_timers WHERE routeId = :routeId")
+    fun getByRouteId(routeId: Long): Flow<RouteTimerEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(timer: RouteTimerEntity)
 }
-

@@ -12,15 +12,14 @@ class RouteRepository(
 
     fun getRouteById(routeId: Long): Flow<RouteEntity?> = routeDao.getById(routeId)
 
-    fun getSavedElapsedSeconds(routeId: Long, dateIso: String): Flow<Long> {
-        return routeTimerDao.getByRouteAndDate(routeId, dateIso).map { it?.elapsedSeconds ?: 0L }
+    fun getSavedElapsedSeconds(routeId: Long): Flow<Long> {
+        return routeTimerDao.getByRouteId(routeId).map { it?.elapsedSeconds ?: 0L }
     }
 
-    suspend fun saveElapsedSeconds(routeId: Long, dateIso: String, elapsedSeconds: Long) {
+    suspend fun saveElapsedSeconds(routeId: Long, elapsedSeconds: Long) {
         routeTimerDao.upsert(
             RouteTimerEntity(
                 routeId = routeId,
-                dateIso = dateIso,
                 elapsedSeconds = elapsedSeconds
             )
         )
@@ -130,4 +129,3 @@ class RouteRepository(
         )
     }
 }
-
