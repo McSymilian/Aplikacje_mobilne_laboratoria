@@ -197,7 +197,7 @@ private fun RouteListScreenGrid(
                             .padding(8.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Aplikacja Górskich Szlaków", style = MaterialTheme.typography.headlineMedium)
+                            Text("Lista Szlaków Turystycznych", style = MaterialTheme.typography.headlineMedium)
                             Text(
                                 "Ta aplikacja pomaga w śledzeniu postępów na szlakach turystycznych. Zobacz szczegóły wymarzonej trasy i mierz swój czas podejścia z użyciem zintegrowanego stopera.",
                                 modifier = Modifier.padding(top = 8.dp),
